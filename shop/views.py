@@ -9,8 +9,11 @@ from .serializers import ProductSerializers
 class ProductList(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request):
-        products = Product.objects.all()
+    def get(self, request, category=None):
+        if category:
+            products = Product.objects.filter(category__name=category)
+        else:
+            products = Product.objects.all()
         ser_data = ProductSerializers(products, many=True)
         return Response(ser_data.data)
 
@@ -19,7 +22,7 @@ class ProductDetail(APIView):
 
     def get_object(self, slug):
         try:
-            return Product.objects.get(slug=slug)
+            return Product.objects.get(slug=slug, available=True)
         except Product.DoesNotExist:
             raise ValueError("Not found product")
 
