@@ -136,5 +136,7 @@ AWS_S3_ENDPOINT_URL = "https://storage.iran.liara.space"
 AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = "public-read"
+AWS_LOCAL_STORAGE = f"{BASE_DIR}/aws/"
+AWS_SERVICE_NAME = "s3"
 
 MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.storage.iran.liara.space/media/"

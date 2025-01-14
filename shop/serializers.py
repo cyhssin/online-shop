@@ -7,3 +7,12 @@ class ProductSerializers(serializers.ModelSerializer):
         model = Product
         fields = ["category", "name", "slug", "image", "description",
                     "price", "available", "created", "updated"]
+
+class BucketObjectSerializer(serializers.Serializer):
+    ...
+
+class DownloadBucketObject(serializers.Serializer):
+    ...
+
+class DeleteBucketObject(serializers.Serializer):
+    ...
