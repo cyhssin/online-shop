@@ -5,14 +5,23 @@ def all_bucket_objects_task():
     """
     Get all objects from the bucket
     """
-    objects = bucket.get_objects()
+    objects = bucket.get_objects().get("Contents", [])
     return objects
 
 @shared_task
 def delete_object_task(key):
-	bucket.delete_object(key)
+    """
+    Task to delete an object from the bucket asynchronously.
+    Args: key (str): The key of the object to be deleted.
+    """
 
+    bucket.delete_object(key)
 
 @shared_task
 def download_object_task(key):
-	bucket.download_object(key)
+    """
+    Task to download an object from the bucket asynchronously.
+    Args: key (str): The key of the object to be downloaded.
+    """
+
+    bucket.download_object(key)
