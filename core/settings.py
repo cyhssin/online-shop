@@ -36,6 +36,7 @@ INSTALLED_APPS = [
 
     # local apps
     'shop.apps.ShopConfig',
+    'cart.apps.CartConfig',
 ]
 
 MIDDLEWARE = [
@@ -141,3 +142,6 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = "public-read"
 AWS_LOCAL_STORAGE = f"{BASE_DIR}/aws/"
 AWS_SERVICE_NAME = "s3"
+
+# Cart Session
+CART_SESSION_ID = "cart"
