@@ -25,3 +25,10 @@ class CartAddSerializer(serializers.Serializer):
         if not Product.objects.filter(id=value).exists():
             raise serializers.ValidationError("Product does not exist.")
         return value
+
+class CartRemoveSerializer(serializers.Serializer):
+    """
+    Serializer for removing a product from the cart.
+    """
+    
+    product_id = serializers.IntegerField()
