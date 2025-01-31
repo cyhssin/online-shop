@@ -1,5 +1,5 @@
-from pathlib import Path
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -146,3 +146,13 @@ AWS_SERVICE_NAME = "s3"
 
 # Cart Session
 CART_SESSION_ID = "cart"
+
+# ZarinPAl Sandbox Test settings
+MERCHANT = "91da6e3c-e095-476d-bf81-96c8dbe67edc"
+DESCRIPTION = "Payment for Order"
+CALLBACK_URL = "http://127.0.0.1:8000/orders/verify/"
+ZP_API_REQUEST = "https://sandbox.zarinpal.com/pg/v4/payment/request.json"
+ZP_API_STARTPAY = "https://sandbox.zarinpal.com/pg/StartPay/"
+ZP_API_VERIFY = "https://sandbox.zarinpal.com/pg/v4/payment/verify.json"
+
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
