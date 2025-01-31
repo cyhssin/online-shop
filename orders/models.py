@@ -11,6 +11,7 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     discount = models.IntegerField(blank=True, null=True, default=None)
+    authority = models.CharField(max_length=255, blank=True, null=True, default=None)
 
     class Meta:
         ordering = ("paid", "-updated")

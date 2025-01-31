@@ -51,10 +51,6 @@ class OrderCreateView(APIView):
                 quantity=item["quantity"]
             )
 
-        # Preserve order_id in the session for verification
-        # request.session["order_pay"] = {"order_id": order.id}
-        # request.session.save()
-
         # Clear the cart after creating the order
         cart.clear()  
 
