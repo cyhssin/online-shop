@@ -6,9 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.conf import settings as s
+from django.utils import timezone
 
-from .models import Order, OrderItem
-from .serializers import OrderSerializer
+from .models import Order, OrderItem, Coupon
+from .serializers import OrderSerializer, CouponApplySerializer
 from cart.cart import Cart
 
 class OrderDetailView(APIView):
@@ -58,8 +59,47 @@ class OrderCreateView(APIView):
         serializer = OrderSerializer(order)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+class CouponApplyView(APIView):
+    """ API view to apply a coupon to an order. """
+    
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        ser_data = CouponApplySerializer(data=request.data)
+        if not ser_data.is_valid():
+            return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        coupon_code = ser_data.validated_data["coupon"]
+        order_id = ser_data.validated_data["order_id"]
+
+        now_time = timezone.now()
+        try:
+            coupon = Coupon.objects.get(
+                code__exact=coupon_code,
+                valid_from__lte=now_time,
+                valid_to__gte=now_time,
+                active=True
+            )
+        except Coupon.DoesNotExist:
+            return Response(
+                {"error": "Invalid or expired coupon code."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        order = get_object_or_404(Order, id=order_id, user=request.user)
+
+        order.discount = coupon.discount
+        order.save()
+
+        return Response(
+            {"message": "Coupon applied successfully.", "discount": coupon.discount},
+            status=status.HTTP_200_OK
+        )
+        
 class OrderPayView(APIView):
     """ API view to handle payment for an order using Zarinpal."""
+
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, order_id):
         """
@@ -131,6 +171,8 @@ class OrderPayView(APIView):
 
 class OrderVerifyView(APIView):
     """ Verify payment for an order using Zarinpal's callback. """
+
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         order_id = request.query_params.get("order_id")
