@@ -184,3 +184,11 @@ ZP_API_VERIFY = "https://sandbox.zarinpal.com/pg/v4/payment/verify.json"
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
 AUTH_USER_MODEL = "accounts.User"
+
+# SMTP Gmail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587 
+EMAIL_HOST_USER = os.getenv("email")
+EMAIL_HOST_PASSWORD = os.getenv("password")
+EMAIL_USE_TLS = True

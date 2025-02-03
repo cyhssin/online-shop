@@ -1,3 +1,4 @@
+import random
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
@@ -23,3 +24,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_staff(self):
         return self.is_admin
+
+class OtpCode(models.Model):
+    email = models.EmailField()
+    code = models.CharField(max_length=6)
+    created = models.DateTimeField(auto_now_add=True)
+
+    @classmethod
+    def generate_otp(cls, email):
+        otp_code = str(random.randint(100000, 999999))
+        otp_instance, _ = cls.objects.update_or_create(
+            email=email,
+            defaults={"code": otp_code}
+        )
+        return otp_instance
+
+    def __str__(self):
+        return f"{self.email} - {self.code}"

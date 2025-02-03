@@ -1,8 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
+from .models import User, OtpCode
 
-from .models import User
+@admin.register(OtpCode)
+class OtpCodeAdmin(admin.ModelAdmin):
+	list_display = ["email", "code", "created"]
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):

@@ -1,6 +1,8 @@
 from rest_framework import serializers
+from django.core.mail import send_mail
+from django.conf import settings
 
-from .models import User
+from .models import User, OtpCode
 
 class UserSerializer(serializers.ModelSerializer):
     """ Handles serialization and deserialization of User objects """
@@ -24,6 +26,19 @@ class UserSerializer(serializers.ModelSerializer):
         
     def save(self):        
         """ Create a new user """
+
+        email = self.validated_data["email"]
+        # Generate OTP using model method
+        otp_instance = OtpCode.generate_otp(email)
+        
+        # Send email
+        send_mail(
+            "Verify Email",
+            f"Your OTP code for active account is: {otp_instance.code}",
+            settings.EMAIL_HOST_USER,
+            [email],
+            fail_silently=False,
+        )
         
         user = User(
             email=self.validated_data["email"],
@@ -43,3 +58,25 @@ class LoginSerializer(serializers.Serializer):
 class LogoutSerializer(serializers.Serializer):
     """ Handles user logout with refresh token """
     refresh_token = serializers.CharField()
+
+class OTPVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp_code = serializers.CharField(max_length=6)
+
+    def validate(self, data):
+        try:
+            otp_obj = OtpCode.objects.get(email=data["email"])
+            if otp_obj.code != data["otp_code"]:
+                raise serializers.ValidationError("Invalid OTP")
+        except OtpCode.DoesNotExist:
+            raise serializers.ValidationError("Invalid OTP")
+        return data
+    
+    def save(self):
+        email = self.validated_data["email"]
+        user = User.objects.get(email=email)
+        user.is_active = True
+        user.save()
+
+        # Delete used OTP
+        OtpCode.objects.filter(email=email).delete()

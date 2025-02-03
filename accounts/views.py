@@ -7,6 +7,7 @@ from rest_framework import status
 from .serializers import (UserSerializer,
     LoginSerializer,
     LogoutSerializer,
+    OTPVerificationSerializer,
     )
 from .authentication import authenticate
 
@@ -18,7 +19,20 @@ class UserRegistrationView(APIView):
 
         if ser_data.is_valid():
             ser_data.save()
-            return Response({"message": "You registered successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Please check your email for the OTP."}, status=status.HTTP_201_CREATED)
+        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class OTPVerificationView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        ser_data = OTPVerificationSerializer(data=request.data)
+        if ser_data.is_valid():
+            ser_data.save()
+            return Response(
+                {"message": "Your account has been activated"}, 
+                status=status.HTTP_200_OK
+            )
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserLoginView(APIView):
