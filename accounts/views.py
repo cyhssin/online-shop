@@ -8,6 +8,8 @@ from .serializers import (UserSerializer,
     LoginSerializer,
     LogoutSerializer,
     OTPVerificationSerializer,
+    PasswordResetSerializer,
+    ChangePasswordSerializer,
     )
 from .authentication import authenticate
 
@@ -65,3 +67,34 @@ class UserLogoutView(APIView):
             token.blacklist()
             return Response({"message": "you logged out successfully!!"}, status=status.HTTP_200_OK)
         return Response(data=ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserPasswordRestView(APIView):
+    """ Handles password reset requests by sending an OTP to the user's email. """
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        ser_data = PasswordResetSerializer(data=request.data)
+
+        if ser_data.is_valid():
+            ser_data.save()
+            return Response(
+                {"message": "OTP has been sent to your email"}, 
+                status=status.HTTP_200_OK
+            )
+        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ResetPasswordView(APIView):
+    """ This view is accessible to any user and processes the password change. """
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        ser_data = ChangePasswordSerializer(data=request.data)
+        if ser_data.is_valid():
+            ser_data.save()
+            return Response(
+                {"message": "Password has been reset successfully"}, 
+                status=status.HTTP_200_OK
+            )
+        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
