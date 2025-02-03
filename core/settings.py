@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'shop.apps.ShopConfig',
     'cart.apps.CartConfig',
     'orders.apps.OrdersConfig',
+    'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +53,20 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core.urls'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(weeks=1),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(weeks=2),
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
+    'SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER': timedelta(days=1),
+    'SLIDING_TOKEN_LIFETIME_LATE_USER': timedelta(days=30),
+}
 
 TEMPLATES = [
     {
@@ -166,3 +182,5 @@ ZP_API_STARTPAY = "https://sandbox.zarinpal.com/pg/StartPay/"
 ZP_API_VERIFY = "https://sandbox.zarinpal.com/pg/v4/payment/verify.json"
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+
+AUTH_USER_MODEL = "accounts.User"
